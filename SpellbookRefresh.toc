@@ -1,0 +1,20 @@
+## Interface: 16001
+## Title: SpellbookRefresh
+## Notes: A button in the spellbook that puts the highest rank of your spells on your action bars.
+## Notes-ptBR: Um botão no grimório que coloca nas barras de ação o grau mais alto das suas magias.
+## Author: zul_moletom
+## Version: @project-version@
+## X-License: MIT
+## X-Website: https://github.com/paulohva/SpellbookRefresh
+## SavedVariables: SpellbookRefreshDB
+## IconTexture: Interface\AddOns\SpellbookRefresh\Media\Icon
+
+Core.lua
+Locales.lua
+Analyze.lua
+Spellbook.lua
+Bars.lua
+Update.lua
+UI\SpellbookButton.lua
+Trainer.lua
+Slash.lua

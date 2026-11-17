@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
 -- The button in the spellbook: green when every spell on the bars is at its
--- highest rank, orange (with a count) when some can be updated. Its tooltip
--- lists what will change and the class spells that aren't on any bar; the
--- right-click menu ignores those.
+-- highest rank, orange (with a count) when some can be updated. A small (i)
+-- shows while class spells aren't on any bar (and aren't ignored). Its tooltip
+-- lists what will change and those spells; the right-click menu ignores them.
 --
 -- It is our own frame, parented to the spellbook and anchored to it; nothing of
 -- Blizzard's spellbook code or frames is hooked or changed.
@@ -18,10 +18,14 @@ local COLOR_OK = { 0.25, 1, 0.25 }
 local COLOR_TODO = { 1, 0.55, 0.1 }
 local ICON_OK = "Interface\\RaidFrame\\ReadyCheck-Ready"
 local ICON_TODO = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew"
+local ICON_INFO = "Interface\\FriendsFrame\\InformationIcon"
 local ICON_SIZE = 16
+local INFO_SIZE = 14
 local HEIGHT = 24
 local PADDING = 22          -- room around the icon and the text
-local OFFSET_X, OFFSET_Y = 70, 38   -- from the spellbook's bottom left corner
+local OFFSET_X = 70         -- from the spellbook's left edge
+local CENTER_Y = 56         -- button centre above the spellbook's bottom, when the
+                            -- page controls (Page 1/1 < >) can't be measured
 local MENU_HEIGHT = 400     -- the right-click menu scrolls past this
 local MAX_LISTED = 15       -- spells listed in the tooltip
 
@@ -117,12 +121,15 @@ end
 -- State
 --------------------------------------------------------------------------------
 
-local function SetLook(text, font, icon)
+local function SetLook(text, font, icon, showInfo)
 	button:SetNormalFontObject(font)
 	button:SetHighlightFontObject(font)
 	button:SetText(text)
 	button.Icon:SetTexture(icon)
-	button:SetWidth(button:GetFontString():GetStringWidth() + ICON_SIZE + PADDING * 2)
+	button.Info:SetShown(showInfo)
+	local width = button:GetFontString():GetStringWidth() + ICON_SIZE + PADDING * 2
+	if showInfo then width = width + INFO_SIZE + 2 end
+	button:SetWidth(width)
 end
 
 function Button.Refresh()
@@ -133,13 +140,33 @@ function Button.Refresh()
 		button:Enable()
 		local r = ns.Scan()
 		local n = r and #r.outdated or 0
+		local showInfo = r and #r.missing > 0 or false
 		if n > 0 then
-			SetLook(L["Update bars (%d)"]:format(n), fontTodo, ICON_TODO)
+			SetLook(L["Update bars (%d)"]:format(n), fontTodo, ICON_TODO, showInfo)
 		else
-			SetLook(L["Bars up to date"], fontOK, ICON_OK)
+			SetLook(L["Bars up to date"], fontOK, ICON_OK, showInfo)
 		end
 	end
 	if GameTooltip:IsOwned(button) then ShowTooltip(button) end
+end
+
+-- puts the button on the same line as the page controls at the bottom right
+-- (Page 1/1 and its arrows): same vertical centre as the "previous page" arrow
+local function AlignToPager()
+	local parent = button:GetParent()
+	local y = CENTER_Y
+	local paged = parent.PagedSpellsFrame
+	local pager = paged and paged.PagingControls
+	local target = pager and (pager.PrevPageButton or pager)
+	if target then
+		local ok, _, centerY = pcall(target.GetCenter, target)
+		local okBottom, bottom = pcall(parent.GetBottom, parent)
+		if ok and okBottom and centerY and bottom then
+			y = centerY - bottom
+		end
+	end
+	button:ClearAllPoints()
+	button:SetPoint("LEFT", parent, "BOTTOMLEFT", OFFSET_X, y)
 end
 
 local function Queue()
@@ -165,7 +192,7 @@ local function Attach()
 
 	button = CreateFrame("Button", "SpellbookRefreshButton", parent, "UIPanelButtonTemplate")
 	button:SetSize(180, HEIGHT)
-	button:SetPoint("BOTTOMLEFT", parent, "BOTTOMLEFT", OFFSET_X, OFFSET_Y)
+	button:SetPoint("LEFT", parent, "BOTTOMLEFT", OFFSET_X, CENTER_Y)
 	button:SetFrameLevel(parent:GetFrameLevel() + 50)
 	button:SetMotionScriptsWhileDisabled(true)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
@@ -179,6 +206,14 @@ local function Attach()
 	text:ClearAllPoints()
 	text:SetPoint("LEFT", icon, "RIGHT", 4, 0)
 
+	-- (i): some class spells aren't on any bar (see the tooltip)
+	local info = button:CreateTexture(nil, "OVERLAY")
+	info:SetSize(INFO_SIZE, INFO_SIZE)
+	info:SetPoint("LEFT", text, "RIGHT", 4, 0)
+	info:SetTexture(ICON_INFO)
+	info:Hide()
+	button.Info = info
+
 	button:SetScript("OnClick", function(self, mouse)
 		if mouse == "RightButton" then
 			OpenMenu(self)
@@ -189,9 +224,13 @@ local function Attach()
 	end)
 	button:SetScript("OnEnter", ShowTooltip)
 	button:SetScript("OnLeave", function() GameTooltip:Hide() end)
-	button:SetScript("OnShow", Button.Refresh)
+	button:SetScript("OnShow", function()
+		AlignToPager()
+		Button.Refresh()
+	end)
 
 	Button.frame = button
+	if button:IsVisible() then AlignToPager() end
 	Button.Refresh()
 	ns.Debug("spellbook button attached")
 end

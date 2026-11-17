@@ -14,8 +14,9 @@ a button to the spellbook that puts the highest rank you know on your bars, in o
   they are.
 - **Lower ranks you keep on purpose stay.** If a spell is on your bars more than once, in different
   ranks, only the highest one is updated. A lower rank you keep to save mana stays where it is.
-- **Spells you haven't placed yet.** The button's tooltip lists your class spells that aren't on any
-  bar. Right-click the button to ignore the ones you don't want there.
+- **Spells you haven't placed yet.** A small (i) on the button means some of your class spells
+  aren't on any bar; its tooltip lists them. Right-click the button to ignore the ones you don't
+  want there.
 - **A reminder after the trainer.** One chat line when spells on your bars got a new rank.
 - **Every bar and page**, including the stance and form bars. Macros and items are never changed.
 
@@ -36,7 +37,8 @@ see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Usage
 
-Open the spellbook (**P**). The button is at the bottom left of the book.
+Open the spellbook (**P**). The button is at the bottom left of the book, on the same line as the
+page numbers.
 
 | Command | What it does |
 |---|---|

@@ -11,8 +11,8 @@ All notable changes to SpellbookRefresh are listed here.
   when some can be updated.
 - When a spell is on your bars in more than one rank, only the highest one is updated; lower ranks
   you keep on purpose stay.
-- The button's tooltip lists your class spells that aren't on any bar; right-click the button to
-  ignore them.
+- A small (i) on the button while some of your class spells aren't on any bar. Its tooltip lists
+  them; right-click the button to ignore them.
 - One chat line after the trainer when spells on your bars got a new rank (`/sbr trainer` turns it
   off).
 - English and Português (Brasil).

@@ -7,7 +7,7 @@
 ## X-License: MIT
 ## X-Website: https://github.com/paulohva/SpellbookRefresh
 ## SavedVariables: SpellbookRefreshDB
-## IconTexture: Interface\Icons\INV_Misc_Book_09
+## IconTexture: Interface\AddOns\SpellbookRefresh\Media\Icon
 
 Core.lua
 Locales.lua

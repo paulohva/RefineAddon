@@ -37,6 +37,7 @@ Open an issue and include:
 | `UI/SpellbookButton.lua` | The button in the spellbook, its tooltip and right-click menu |
 | `Trainer.lua` | The chat line after the trainer |
 | `Slash.lua` | `/sbr` commands and `/sbr diag` |
+| `Media/Icon.tga` | The addon's icon in the game's AddOns list (64×64, 32-bit TGA) |
 
 ## Guidelines
 

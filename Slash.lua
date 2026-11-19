@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Slash commands: /sbr (or /spellbookrefresh)
+-- Slash commands: /refine
 --------------------------------------------------------------------------------
 
 local _, ns = ...
@@ -12,7 +12,7 @@ local function Line(fmt, ...)
 end
 
 --------------------------------------------------------------------------------
--- /sbr diag (English on purpose: it goes into bug reports)
+-- /refine diag (English on purpose: it goes into bug reports)
 --------------------------------------------------------------------------------
 
 local function Present(fn)
@@ -104,13 +104,13 @@ end
 
 local function Help()
 	ns.Print(L["Commands:"])
-	Line("/sbr update - " .. L["update your action bars (the same as the spellbook button)"])
-	Line("/sbr ignore <spell> - " .. L["don't list a spell that isn't on your bars"])
-	Line("/sbr unignore <spell> - " .. L["list an ignored spell again"])
-	Line("/sbr ignored - " .. L["show the ignored spells"])
-	Line("/sbr trainer - " .. L["turn the chat line after the trainer on or off"])
-	Line("/sbr diag - " .. L["check what this client allows"])
-	Line("/sbr debug - " .. L["toggle debug messages"])
+	Line("/refine update - " .. L["update your action bars (the same as the spellbook button)"])
+	Line("/refine ignore <spell> - " .. L["don't list a spell that isn't on your bars"])
+	Line("/refine unignore <spell> - " .. L["list an ignored spell again"])
+	Line("/refine ignored - " .. L["show the ignored spells"])
+	Line("/refine trainer - " .. L["turn the chat line after the trainer on or off"])
+	Line("/refine diag - " .. L["check what this client allows"])
+	Line("/refine debug - " .. L["toggle debug messages"])
 end
 
 local function Update()
@@ -170,12 +170,10 @@ local COMMANDS = {
 	debug = function()
 		ns.db.debug = not ns.db.debug
 		ns.Print(ns.db.debug and L["Debug messages on."] or L["Debug messages off."])
-	end,
-}
+	end,}
 
-SLASH_SPELLBOOKREFRESH1 = "/sbr"
-SLASH_SPELLBOOKREFRESH2 = "/spellbookrefresh"
-SlashCmdList.SPELLBOOKREFRESH = function(msg)
+SLASH_REFINE1 = "/refine"
+SlashCmdList.REFINE = function(msg)
 	local cmd, arg = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
 	local fn = COMMANDS[(cmd or ""):lower()]
 	if fn and ns.db then

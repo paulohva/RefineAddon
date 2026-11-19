@@ -154,7 +154,7 @@ function ns.UpdateBars()
 	ClearCursor()
 
 	if failed > 0 then
-		ns.ScreenError(L["Some action bar buttons couldn't be changed. Type /sbr diag."])
+		ns.ScreenError(L["Some action bar buttons couldn't be changed. Type /refine diag."])
 	end
 	ns.Fire("CHANGED")
 	return changed, failed

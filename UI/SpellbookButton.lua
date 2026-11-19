@@ -1,11 +1,15 @@
 --------------------------------------------------------------------------------
--- The button in the spellbook: green when every spell on the bars is at its
--- highest rank, orange (with a count) when some can be updated. A small (i)
--- shows while class spells aren't on any bar (and aren't ignored). Its tooltip
--- lists what will change and those spells; the right-click menu ignores them.
+-- The Refine button: a small square button in the spellbook, on the line of
+-- the category title ("General", "Frost"...), its right edge lined up with the
+-- page arrows at the bottom. It shows a golden check mark when every
+-- spell on the bars is at its highest rank (nothing to do), and an orange
+-- refresh symbol with a count when some can be updated. A small (i)
+-- in the corner shows while class spells aren't on any bar (and aren't
+-- ignored). The tooltip lists both; the right-click menu ignores spells.
 --
 -- It is our own frame, parented to the spellbook and anchored to it; nothing of
--- Blizzard's spellbook code or frames is hooked or changed.
+-- Blizzard's spellbook code or frames is hooked or changed (their positions are
+-- only read, to line the button up with the title).
 --------------------------------------------------------------------------------
 
 local _, ns = ...
@@ -14,29 +18,27 @@ local L = ns.L
 local Button = {}
 ns.Button = Button
 
-local COLOR_OK = { 0.25, 1, 0.25 }
-local COLOR_TODO = { 1, 0.55, 0.1 }
-local ICON_OK = "Interface\\RaidFrame\\ReadyCheck-Ready"
-local ICON_TODO = "Interface\\DialogFrame\\UI-Dialog-Icon-AlertNew"
+local SIZE = 40
+local ICON_SIZE = 24
+local CHECK_SIZE = 21
+local CHECK_FILE_SIZE = 29  -- the fallback check texture has some empty space around it
+local ICON_CHECK_ATLAS = "common-icon-checkmark-yellow"     -- a large, clean golden check
+local ICON_ATLAS = "UI-RefreshButton"
+local ICON_FILE = "Interface\\Buttons\\UI-RefreshButton"
+local ICON_CHECK = "Interface\\Buttons\\UI-CheckBox-Check"   -- fallback: the check of the game's check boxes
 local ICON_INFO = "Interface\\FriendsFrame\\InformationIcon"
-local ICON_SIZE = 16
-local INFO_SIZE = 14
-local HEIGHT = 24
-local PADDING = 22          -- room around the icon and the text
-local OFFSET_X = 70         -- from the spellbook's left edge
-local CENTER_Y = 56         -- button centre above the spellbook's bottom, when the
-                            -- page controls (Page 1/1 < >) can't be measured
+local INFO_SIZE = 13
+local COLOR_OK = { 0.35, 1, 0.35 }         -- tooltip text: everything up to date
+local COLOR_PLAIN = { 1, 1, 1 }            -- nothing to do: the check as the game draws it
+local COLOR_TODO = { 1, 0.6, 0.15 }        -- orange: something to update
+local COLOR_COMBAT = { 0.45, 0.45, 0.45 }  -- greyed out in combat
+local TITLE_SLACK = 40      -- the category title is the first thing on the left page
+local FALLBACK_X, FALLBACK_Y = -60, -12   -- from the left page's top right, when the title can't be measured
 local MENU_HEIGHT = 400     -- the right-click menu scrolls past this
 local MAX_LISTED = 15       -- spells listed in the tooltip
 
-local button, fontOK, fontTodo
-
-local function MakeFont(name, color)
-	local font = CreateFont(name)
-	font:CopyFontObject(GameFontNormal)
-	font:SetTextColor(color[1], color[2], color[3])
-	return font
-end
+local button
+local titleOffset           -- { x, y } of the title line's right end, from the left page's top left
 
 --------------------------------------------------------------------------------
 -- Tooltip
@@ -44,7 +46,7 @@ end
 
 local function ShowTooltip(self)
 	local r = ns.last
-	GameTooltip:SetOwner(self, "ANCHOR_TOP")
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(ns.NAME, 1, 1, 1)
 
 	if InCombatLockdown() then
@@ -118,55 +120,107 @@ local function OpenMenu(self)
 end
 
 --------------------------------------------------------------------------------
+-- Position: on the category title's line, at the right end of its divider
+--------------------------------------------------------------------------------
+
+local function Get(frame, method)
+	if type(frame) ~= "table" or type(frame[method]) ~= "function" then return nil end
+	local ok, a, b = pcall(frame[method], frame)
+	if not ok then return nil end
+	return a, b
+end
+
+-- the category title (header) at the top of the left page, if it's showing
+local function FindTitle(view)
+	local ok, children = pcall(function() return { view:GetChildren() } end)
+	if not ok then return nil end
+	local best, bestTop
+	for _, child in ipairs(children) do
+		if type(child.Text) == "table" and type(child.Border) == "table" and Get(child, "IsShown") then
+			local top = Get(child, "GetTop")
+			if top and (not bestTop or top > bestTop) then best, bestTop = child, top end
+		end
+	end
+	return best, bestTop
+end
+
+-- height: the category title's line; right edge: the "next page" arrow at the
+-- bottom right (Page 1/1 < >), or the end of the title's divider without it
+local function MeasureTitle(view, pager)
+	local viewTop, viewLeft = Get(view, "GetTop"), Get(view, "GetLeft")
+	local title, top = FindTitle(view)
+	if not (title and top and viewTop and viewLeft) or viewTop - top > TITLE_SLACK then return end
+	local _, centerY = Get(title.Text, "GetCenter")
+	local right = pager and Get(pager.NextPageButton or pager, "GetRight") or Get(title.Border, "GetRight")
+	if right and centerY then
+		titleOffset = { right - viewLeft, centerY - viewTop }
+		ns.Debug("button lined up with the category title and the page arrows (%.0f, %.0f)", titleOffset[1], titleOffset[2])
+	end
+end
+
+local function Align()
+	if not button then return end
+	local parent = button:GetParent()
+	local paged = parent.PagedSpellsFrame
+	local view = paged and paged.View1
+	if not view then return end
+	if not titleOffset then MeasureTitle(view, paged.PagingControls) end
+	button:ClearAllPoints()
+	if titleOffset then
+		button:SetPoint("RIGHT", view, "TOPLEFT", titleOffset[1], titleOffset[2])
+	else
+		button:SetPoint("RIGHT", view, "TOPRIGHT", FALLBACK_X, FALLBACK_Y)
+	end
+end
+
+--------------------------------------------------------------------------------
 -- State
 --------------------------------------------------------------------------------
 
-local function SetLook(text, font, icon, showInfo)
-	button:SetNormalFontObject(font)
-	button:SetHighlightFontObject(font)
-	button:SetText(text)
-	button.Icon:SetTexture(icon)
-	button.Info:SetShown(showInfo)
-	local width = button:GetFontString():GetStringWidth() + ICON_SIZE + PADDING * 2
-	if showInfo then width = width + INFO_SIZE + 2 end
-	button:SetWidth(width)
+local function Tint(color, desaturated)
+	if button.Icon.SetDesaturated then button.Icon:SetDesaturated(desaturated and true or false) end
+	button.Icon:SetVertexColor(color[1], color[2], color[3])
+end
+
+-- "check": nothing to do; "refresh": something to update
+local function ShowSymbol(which)
+	if button.symbol == which then return end
+	button.symbol = which
+	local icon = button.Icon
+	if which == "check" then
+		local hasAtlas = not (C_Texture and C_Texture.GetAtlasInfo) or C_Texture.GetAtlasInfo(ICON_CHECK_ATLAS) ~= nil
+		if hasAtlas and pcall(icon.SetAtlas, icon, ICON_CHECK_ATLAS) then
+			icon:SetSize(CHECK_SIZE, CHECK_SIZE)
+		else
+			icon:SetTexture(ICON_CHECK)
+			icon:SetSize(CHECK_FILE_SIZE, CHECK_FILE_SIZE)
+		end
+	else
+		if not pcall(icon.SetAtlas, icon, ICON_ATLAS) then icon:SetTexture(ICON_FILE) end
+		icon:SetSize(ICON_SIZE, ICON_SIZE)
+	end
 end
 
 function Button.Refresh()
 	if not button or not ns.db then return end
 	if InCombatLockdown() then
 		button:Disable()
+		Tint(COLOR_COMBAT, true)
 	else
 		button:Enable()
 		local r = ns.Scan()
 		local n = r and #r.outdated or 0
-		local showInfo = r and #r.missing > 0 or false
 		if n > 0 then
-			SetLook(L["Update bars (%d)"]:format(n), fontTodo, ICON_TODO, showInfo)
+			ShowSymbol("refresh")
+			Tint(COLOR_TODO, false)
 		else
-			SetLook(L["Bars up to date"], fontOK, ICON_OK, showInfo)
+			ShowSymbol("check")
+			Tint(COLOR_PLAIN, false)
 		end
+		button.Count:SetText(n > 0 and tostring(n) or "")
+		button.Info:SetShown(r and #r.missing > 0 or false)
 	end
 	if GameTooltip:IsOwned(button) then ShowTooltip(button) end
-end
-
--- puts the button on the same line as the page controls at the bottom right
--- (Page 1/1 and its arrows): same vertical centre as the "previous page" arrow
-local function AlignToPager()
-	local parent = button:GetParent()
-	local y = CENTER_Y
-	local paged = parent.PagedSpellsFrame
-	local pager = paged and paged.PagingControls
-	local target = pager and (pager.PrevPageButton or pager)
-	if target then
-		local ok, _, centerY = pcall(target.GetCenter, target)
-		local okBottom, bottom = pcall(parent.GetBottom, parent)
-		if ok and okBottom and centerY and bottom then
-			y = centerY - bottom
-		end
-	end
-	button:ClearAllPoints()
-	button:SetPoint("LEFT", parent, "BOTTOMLEFT", OFFSET_X, y)
 end
 
 local function Queue()
@@ -179,6 +233,25 @@ end
 -- Creation, once the spellbook (load-on-demand) is loaded
 --------------------------------------------------------------------------------
 
+-- Blizzard's square refresh button, or a plain square with the same symbol
+local function MakeButton(parent, name)
+	local ok, b = pcall(CreateFrame, "Button", name, parent, "RefreshButtonTemplate")
+	if ok and b and type(b.Icon) == "table" then return b end
+	if ok and b then b:Hide() end
+
+	b = CreateFrame("Button", name and (name .. "Plain"), parent)
+	local bg = b:CreateTexture(nil, "BACKGROUND")
+	bg:SetAllPoints()
+	bg:SetColorTexture(0, 0, 0, 0.45)
+	local icon = b:CreateTexture(nil, "ARTWORK")
+	icon:SetPoint("CENTER")
+	icon:SetSize(ICON_SIZE, ICON_SIZE)
+	if not pcall(icon.SetAtlas, icon, ICON_ATLAS) then icon:SetTexture(ICON_FILE) end
+	b.Icon = icon
+	b:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+	return b
+end
+
 local function Attach()
 	if button then return end
 	local parent = PlayerSpellsFrame and PlayerSpellsFrame.SpellBookFrame
@@ -187,29 +260,22 @@ local function Attach()
 		return
 	end
 
-	fontOK = MakeFont("SpellbookRefreshFontOK", COLOR_OK)
-	fontTodo = MakeFont("SpellbookRefreshFontTodo", COLOR_TODO)
-
-	button = CreateFrame("Button", "SpellbookRefreshButton", parent, "UIPanelButtonTemplate")
-	button:SetSize(180, HEIGHT)
-	button:SetPoint("LEFT", parent, "BOTTOMLEFT", OFFSET_X, CENTER_Y)
+	button = MakeButton(parent, "RefineButton")
+	button:SetSize(SIZE, SIZE)
+	button.Icon:SetSize(ICON_SIZE, ICON_SIZE)
 	button:SetFrameLevel(parent:GetFrameLevel() + 50)
 	button:SetMotionScriptsWhileDisabled(true)
 	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
 
-	local icon = button:CreateTexture(nil, "OVERLAY")
-	icon:SetSize(ICON_SIZE, ICON_SIZE)
-	icon:SetPoint("LEFT", button, "LEFT", PADDING - 6, 0)
-	button.Icon = icon
-
-	local text = button:GetFontString()
-	text:ClearAllPoints()
-	text:SetPoint("LEFT", icon, "RIGHT", 4, 0)
+	-- how many spells can be updated, in the corner like an action button's count
+	local count = button:CreateFontString(nil, "OVERLAY", "NumberFontNormal")
+	count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -1, 2)
+	button.Count = count
 
 	-- (i): some class spells aren't on any bar (see the tooltip)
 	local info = button:CreateTexture(nil, "OVERLAY")
 	info:SetSize(INFO_SIZE, INFO_SIZE)
-	info:SetPoint("LEFT", text, "RIGHT", 4, 0)
+	info:SetPoint("CENTER", button, "TOPRIGHT", -2, -2)
 	info:SetTexture(ICON_INFO)
 	info:Hide()
 	button.Info = info
@@ -225,12 +291,14 @@ local function Attach()
 	button:SetScript("OnEnter", ShowTooltip)
 	button:SetScript("OnLeave", function() GameTooltip:Hide() end)
 	button:SetScript("OnShow", function()
-		AlignToPager()
+		Align()
 		Button.Refresh()
+		-- the pages fill in as the spellbook opens: measure the title again next frame
+		C_Timer.After(0, Align)
 	end)
 
 	Button.frame = button
-	if button:IsVisible() then AlignToPager() end
+	Align()
 	Button.Refresh()
 	ns.Debug("spellbook button attached")
 end

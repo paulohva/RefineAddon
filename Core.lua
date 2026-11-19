@@ -1,10 +1,10 @@
 --------------------------------------------------------------------------------
--- SpellbookRefresh: core (namespace, secret-safe helpers, events, saved data)
+-- Refine: core (namespace, secret-safe helpers, events, saved data)
 --------------------------------------------------------------------------------
 
 local ADDON, ns = ...
 
-ns.NAME = "SpellbookRefresh"
+ns.NAME = "Refine"
 ns.ACCENT = "ffd100"   -- Blizzard gold
 
 local DB_VERSION = 1
@@ -21,7 +21,7 @@ end
 function ns.Debug(fmt, ...)
 	if not (ns.db and ns.db.debug) then return end
 	local msg = select("#", ...) > 0 and fmt:format(...) or tostring(fmt)
-	DEFAULT_CHAT_FRAME:AddMessage("|cff888888[SBR]|r " .. msg)
+	DEFAULT_CHAT_FRAME:AddMessage("|cff888888[Refine]|r " .. msg)
 end
 
 -- a short red line at the top of the screen (not in the chat)
@@ -140,7 +140,7 @@ end
 
 --------------------------------------------------------------------------------
 -- Saved data
---   SpellbookRefreshDB = {
+--   RefineDB = {
 --     version,
 --     debug,
 --     trainerNote,                                  -- chat line after the trainer
@@ -155,12 +155,12 @@ function ns.CharKey()
 end
 
 local function InitDB()
-	local db = SpellbookRefreshDB
+	local db = RefineDB
 	if type(db) ~= "table" then db = {} end
 	db.version = DB_VERSION
 	if db.trainerNote == nil then db.trainerNote = true end
 	db.chars = db.chars or {}
-	SpellbookRefreshDB = db
+	RefineDB = db
 	ns.db = db
 end
 

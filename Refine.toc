@@ -16,5 +16,7 @@ Spellbook.lua
 Bars.lua
 Update.lua
 UI\SpellbookButton.lua
+UI\IgnoreRow.xml
+UI\IgnoreWindow.lua
 Trainer.lua
 Slash.lua

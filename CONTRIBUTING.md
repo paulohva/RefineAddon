@@ -36,7 +36,8 @@ Open an issue and include:
 | `Spellbook.lua` | Reads the spellbook: every spell, all its ranks together |
 | `Bars.lua` | Reads the action slots (all bars and pages, and macros) |
 | `Update.lua` | Scans, keeps the ignored spells, and puts the highest ranks on the bars |
-| `UI/SpellbookButton.lua` | The refresh button in the spellbook, its tooltip and right-click menu |
+| `UI/SpellbookButton.lua` | The refresh button in the spellbook and its tooltip |
+| `UI/IgnoreWindow.lua`, `UI/IgnoreRow.xml` | The window to choose the spells to ignore |
 | `Trainer.lua` | The chat line after the trainer |
 | `Slash.lua` | `/refine` commands and `/refine diag` |
 | `Media/Icon.tga` | The addon's icon in the game's AddOns list (64×64, 32-bit TGA) |

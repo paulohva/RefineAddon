@@ -107,7 +107,7 @@ local function Help()
 	Line("/refine update - " .. L["update your action bars (the same as the spellbook button)"])
 	Line("/refine ignore <spell> - " .. L["don't list a spell that isn't on your bars"])
 	Line("/refine unignore <spell> - " .. L["list an ignored spell again"])
-	Line("/refine ignored - " .. L["show the ignored spells"])
+	Line("/refine ignored - " .. L["open the window to choose the spells to ignore"])
 	Line("/refine trainer - " .. L["turn the chat line after the trainer on or off"])
 	Line("/refine diag - " .. L["check what this client allows"])
 	Line("/refine debug - " .. L["toggle debug messages"])
@@ -146,22 +146,12 @@ local function Unignore(arg)
 	ns.Print(L["\"%s\" isn't ignored."], arg or "")
 end
 
-local function ListIgnored()
-	if not ns.last then ns.Scan() end
-	local names = {}
-	for _, ig in ipairs(ns.IgnoredList()) do table.insert(names, ig.key) end
-	if #names == 0 then
-		ns.Print(L["No ignored spells."])
-	else
-		ns.Print(L["Ignored spells: %s"], table.concat(names, ", "))
-	end
-end
 
 local COMMANDS = {
 	update = Update,
 	ignore = Ignore,
 	unignore = Unignore,
-	ignored = ListIgnored,
+	ignored = function() ns.IgnoreWindow.Toggle() end,
 	trainer = function()
 		ns.db.trainerNote = not ns.db.trainerNote
 		ns.Print(ns.db.trainerNote and L["Chat line after the trainer: on."] or L["Chat line after the trainer: off."])

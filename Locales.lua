@@ -13,18 +13,18 @@ ns.L = L
 local locale = GetLocale and GetLocale() or "enUS"
 
 if locale == "ptBR" then
-	-- spellbook button (tooltip and menu)
+	-- spellbook button (tooltip)
 	L["To update:"] = "Para atualizar:"
 	L["(%d buttons)"] = "(%d botões)"
 	L["Every spell on your bars is at its highest rank."] = "Todas as magias das suas barras estão no grau mais alto."
 	L["Not on your bars:"] = "Fora das suas barras:"
 	L["and %d more"] = "e mais %d"
 	L["Click: update your bars"] = "Clique: atualiza as suas barras"
-	L["Right-click: ignore spells that aren't on your bars"] = "Botão direito: ignora magias que não estão nas barras"
-	L["Ignore a spell that isn't on your bars:"] = "Ignorar uma magia que não está nas barras:"
-	L["(none)"] = "(nenhuma)"
-	L["Ignored spells (%d)"] = "Magias ignoradas (%d)"
-	L["Click to list it again:"] = "Clique para voltar a listar:"
+	L["Right-click: choose spells to ignore (/refine ignored)"] = "Botão direito: escolher magias a ignorar (/refine ignored)"
+
+	-- ignored spells window
+	L["Spells not on your bars. Tick the ones to ignore."] = "Magias fora das suas barras. Marque as que quer ignorar."
+	L["All your class spells are on your bars."] = "Todas as suas magias de classe estão nas barras."
 
 	-- updating
 	L["You can't change your action bars in combat."] = "Não é possível alterar as barras de ação em combate."
@@ -46,7 +46,7 @@ if locale == "ptBR" then
 		"atualiza as barras de ação (o mesmo que o botão do grimório)"
 	L["don't list a spell that isn't on your bars"] = "deixa de listar uma magia que não está nas barras"
 	L["list an ignored spell again"] = "volta a listar uma magia ignorada"
-	L["show the ignored spells"] = "mostra as magias ignoradas"
+	L["open the window to choose the spells to ignore"] = "abre a janela para escolher as magias a ignorar"
 	L["turn the chat line after the trainer on or off"] = "liga/desliga o aviso no chat depois do treinador"
 	L["check what this client allows"] = "verifica o que este cliente permite"
 	L["toggle debug messages"] = "liga/desliga mensagens de depuração"
@@ -55,8 +55,6 @@ if locale == "ptBR" then
 	L["Ignored: %s."] = "Ignorada: %s."
 	L["Listed again: %s."] = "Listada de novo: %s."
 	L["\"%s\" isn't ignored."] = "\"%s\" não está ignorada."
-	L["No ignored spells."] = "Nenhuma magia ignorada."
-	L["Ignored spells: %s"] = "Magias ignoradas: %s"
 	L["Chat line after the trainer: on."] = "Aviso no chat depois do treinador: ligado."
 	L["Chat line after the trainer: off."] = "Aviso no chat depois do treinador: desligado."
 	L["Debug messages on."] = "Mensagens de depuração ligadas."

@@ -4,6 +4,15 @@ All notable changes to Refine (called SpellbookRefresh up to 1.0.0) are listed h
 
 ## Unreleased
 
+## 1.2.0
+
+- The button only shows when there's something to do: the orange refresh symbol with a count when
+  spells can be updated, or the golden check with the (i) when your bars are up to date but some
+  class spells aren't on any bar. When there's nothing left, it disappears.
+- A small window to choose the spells to ignore: the class spells that aren't on any bar, each
+  with a check box. Right-click the button or type `/refine ignored` to open it, so it works even
+  while the button is away. It replaces the right-click menu.
+
 ## 1.1.0
 
 - New name: SpellbookRefresh is now **Refine**. Its folder is now `Refine` and its command

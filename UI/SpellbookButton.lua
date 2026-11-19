@@ -1,11 +1,13 @@
 --------------------------------------------------------------------------------
--- The Refine button: a small square button in the spellbook, on the line of
--- the category title ("General", "Frost"...), its right edge lined up with the
--- page arrows at the bottom. It shows a golden check mark when every
--- spell on the bars is at its highest rank (nothing to do), and an orange
--- refresh symbol with a count when some can be updated. A small (i)
--- in the corner shows while class spells aren't on any bar (and aren't
--- ignored). The tooltip lists both; the right-click menu ignores spells.
+-- The Refine button: a small square refresh button in the spellbook, on the
+-- line of the category title ("General", "Frost"...), its right edge lined up
+-- with the page arrows at the bottom. It only shows when there's something to do:
+--   * spells to update: an orange refresh symbol with a count; click to update;
+--   * bars up to date, but class spells that aren't on any bar (and aren't
+--     ignored): a golden check with a small (i);
+--   * nothing left: the button disappears (stays in place, invisible and not
+--     clickable, so it comes back by itself).
+-- The tooltip lists both; right-click opens the ignored spells window.
 --
 -- It is our own frame, parented to the spellbook and anchored to it; nothing of
 -- Blizzard's spellbook code or frames is hooked or changed (their positions are
@@ -20,21 +22,20 @@ ns.Button = Button
 
 local SIZE = 40
 local ICON_SIZE = 24
+local ICON_ATLAS = "UI-RefreshButton"
+local ICON_FILE = "Interface\\Buttons\\UI-RefreshButton"
 local CHECK_SIZE = 21
 local CHECK_FILE_SIZE = 29  -- the fallback check texture has some empty space around it
 local ICON_CHECK_ATLAS = "common-icon-checkmark-yellow"     -- a large, clean golden check
-local ICON_ATLAS = "UI-RefreshButton"
-local ICON_FILE = "Interface\\Buttons\\UI-RefreshButton"
 local ICON_CHECK = "Interface\\Buttons\\UI-CheckBox-Check"   -- fallback: the check of the game's check boxes
 local ICON_INFO = "Interface\\FriendsFrame\\InformationIcon"
 local INFO_SIZE = 13
 local COLOR_OK = { 0.35, 1, 0.35 }         -- tooltip text: everything up to date
-local COLOR_PLAIN = { 1, 1, 1 }            -- nothing to do: the check as the game draws it
+local COLOR_PLAIN = { 1, 1, 1 }            -- bars up to date: the check as the game draws it
 local COLOR_TODO = { 1, 0.6, 0.15 }        -- orange: something to update
 local COLOR_COMBAT = { 0.45, 0.45, 0.45 }  -- greyed out in combat
 local TITLE_SLACK = 40      -- the category title is the first thing on the left page
 local FALLBACK_X, FALLBACK_Y = -60, -12   -- from the left page's top right, when the title can't be measured
-local MENU_HEIGHT = 400     -- the right-click menu scrolls past this
 local MAX_LISTED = 15       -- spells listed in the tooltip
 
 local button
@@ -85,38 +86,8 @@ local function ShowTooltip(self)
 	if r and #r.outdated > 0 then
 		GameTooltip:AddLine(L["Click: update your bars"], 0.5, 0.5, 0.5)
 	end
-	GameTooltip:AddLine(L["Right-click: ignore spells that aren't on your bars"], 0.5, 0.5, 0.5)
+	GameTooltip:AddLine(L["Right-click: choose spells to ignore (/refine ignored)"], 0.5, 0.5, 0.5)
 	GameTooltip:Show()
-end
-
---------------------------------------------------------------------------------
--- Right-click menu: ignore / stop ignoring
---------------------------------------------------------------------------------
-
-local function OpenMenu(self)
-	if not (MenuUtil and MenuUtil.CreateContextMenu) then return end
-	local r = ns.last or ns.Scan()
-	if not r then return end
-	MenuUtil.CreateContextMenu(self, function(_, root)
-		if root.SetScrollMode then pcall(root.SetScrollMode, root, MENU_HEIGHT) end
-		root:CreateTitle(L["Ignore a spell that isn't on your bars:"])
-		if #r.missing == 0 then
-			root:CreateTitle(L["(none)"])
-		end
-		for _, m in ipairs(r.missing) do
-			root:CreateButton(m.name, function() ns.Ignore(m.spellID) end)
-		end
-
-		local ignored = ns.IgnoredList()
-		if #ignored > 0 then
-			root:CreateDivider()
-			local sub = root:CreateButton(L["Ignored spells (%d)"]:format(#ignored))
-			sub:CreateTitle(L["Click to list it again:"])
-			for _, ig in ipairs(ignored) do
-				sub:CreateButton(ig.key, function() ns.Unignore(ig.key) end)
-			end
-		end
-	end)
 end
 
 --------------------------------------------------------------------------------
@@ -182,7 +153,17 @@ local function Tint(color, desaturated)
 	button.Icon:SetVertexColor(color[1], color[2], color[3])
 end
 
--- "check": nothing to do; "refresh": something to update
+-- nothing left to do: invisible and not clickable, but still shown, so its
+-- OnShow and events keep running and it comes back by itself
+local function SetVanished(vanished)
+	if button.vanished == vanished then return end
+	button.vanished = vanished
+	button:SetAlpha(vanished and 0 or 1)
+	button:EnableMouse(not vanished)
+	if vanished and GameTooltip:IsOwned(button) then GameTooltip:Hide() end
+end
+
+-- "check": bars up to date; "refresh": something to update
 local function ShowSymbol(which)
 	if button.symbol == which then return end
 	button.symbol = which
@@ -210,6 +191,7 @@ function Button.Refresh()
 		button:Enable()
 		local r = ns.Scan()
 		local n = r and #r.outdated or 0
+		local missing = r and #r.missing or 0
 		if n > 0 then
 			ShowSymbol("refresh")
 			Tint(COLOR_TODO, false)
@@ -218,9 +200,10 @@ function Button.Refresh()
 			Tint(COLOR_PLAIN, false)
 		end
 		button.Count:SetText(n > 0 and tostring(n) or "")
-		button.Info:SetShown(r and #r.missing > 0 or false)
+		button.Info:SetShown(missing > 0)
+		SetVanished(n == 0 and missing == 0)
 	end
-	if GameTooltip:IsOwned(button) then ShowTooltip(button) end
+	if GameTooltip:IsOwned(button) and not button.vanished then ShowTooltip(button) end
 end
 
 local function Queue()
@@ -282,7 +265,7 @@ local function Attach()
 
 	button:SetScript("OnClick", function(self, mouse)
 		if mouse == "RightButton" then
-			OpenMenu(self)
+			ns.IgnoreWindow.Toggle()
 			return
 		end
 		ns.UpdateBars()

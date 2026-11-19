@@ -1,4 +1,4 @@
-# Contributing to SpellbookRefresh
+# Contributing to Refine
 
 Thanks for helping out! Bug reports, ideas and pull requests are all welcome.
 
@@ -7,9 +7,9 @@ Thanks for helping out! Bug reports, ideas and pull requests are all welcome.
 Open an issue and include:
 
 - what you did, what you expected, and what happened instead;
-- the output of `/sbr diag`;
+- the output of `/refine diag`;
 - the full Lua error text, if there was one ([BugSack](https://www.curseforge.com/wow/addons/bugsack) makes this easy);
-- your game version (shown by `/sbr diag`).
+- your game version (shown by `/refine diag`).
 
 ## Development setup
 
@@ -17,12 +17,14 @@ Open an issue and include:
 2. Link the folder into the game, so `/reload` picks up your changes. From a Command Prompt:
 
    ```bat
-   mklink /J "C:\Program Files (x86)\World of Warcraft\_forever_\Interface\AddOns\SpellbookRefresh" "C:\path\to\your\clone"
+   mklink /J "C:\Program Files (x86)\World of Warcraft\_forever_\Interface\AddOns\Refine" "C:\path\to\your\clone"
    ```
+
+   The link must be called `Refine` (the addon's name), whatever your clone's folder is called.
 
    On macOS, use `ln -s` into `/Applications/World of Warcraft/_forever_/Interface/AddOns/`.
 
-3. Log in, make changes, and type `/reload`. `/sbr debug` prints what the addon is doing.
+3. Log in, make changes, and type `/reload`. `/refine debug` prints what the addon is doing.
 
 ## Code layout
 
@@ -34,9 +36,9 @@ Open an issue and include:
 | `Spellbook.lua` | Reads the spellbook: every spell, all its ranks together |
 | `Bars.lua` | Reads the action slots (all bars and pages, and macros) |
 | `Update.lua` | Scans, keeps the ignored spells, and puts the highest ranks on the bars |
-| `UI/SpellbookButton.lua` | The button in the spellbook, its tooltip and right-click menu |
+| `UI/SpellbookButton.lua` | The refresh button in the spellbook, its tooltip and right-click menu |
 | `Trainer.lua` | The chat line after the trainer |
-| `Slash.lua` | `/sbr` commands and `/sbr diag` |
+| `Slash.lua` | `/refine` commands and `/refine diag` |
 | `Media/Icon.tga` | The addon's icon in the game's AddOns list (64×64, 32-bit TGA) |
 
 ## Guidelines
@@ -44,7 +46,7 @@ Open an issue and include:
 - **Indentation:** use tabs in Lua, matching the existing code.
 - **Language:** write player-facing text in English and wrap it in `L["..."]`, then add the
   translation to each language block in `Locales.lua`. Spell names and ranks come from the game,
-  already translated. Debug and `/sbr diag` output stays in English.
+  already translated. Debug and `/refine diag` output stays in English.
 - **Adding a language:** copy the `ptBR` block in `Locales.lua`, change the locale code
   (`deDE`, `frFR`, `esES`, ...) and translate the right-hand side.
 - **Secret values:** WoW: Forever restricts addons the same way as Midnight. Game values can be
@@ -58,7 +60,7 @@ Open an issue and include:
 ## Releasing (maintainers)
 
 1. Move the *Unreleased* changelog entries under a new version heading.
-2. Build `SpellbookRefresh-vX.Y.Z.zip` from the release commit: a `SpellbookRefresh/` folder without
+2. Build `Refine-vX.Y.Z.zip` from the release commit: a `Refine/` folder without
    the files listed under `ignore` in `.pkgmeta`, and with `@project-version@` in the `.toc`
    replaced by the version.
 3. Create the GitHub release `vX.Y.Z` with that zip, and upload the same zip to CurseForge.

@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- After the trainer: one chat line when spells on your bars got a new rank.
--- Turned off with /sbr trainer.
+-- Turned off with /refine trainer.
 --------------------------------------------------------------------------------
 
 local _, ns = ...

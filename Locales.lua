@@ -13,9 +13,7 @@ ns.L = L
 local locale = GetLocale and GetLocale() or "enUS"
 
 if locale == "ptBR" then
-	-- spellbook button
-	L["Update bars (%d)"] = "Atualizar barras (%d)"
-	L["Bars up to date"] = "Barras atualizadas"
+	-- spellbook button (tooltip and menu)
 	L["To update:"] = "Para atualizar:"
 	L["(%d buttons)"] = "(%d botões)"
 	L["Every spell on your bars is at its highest rank."] = "Todas as magias das suas barras estão no grau mais alto."
@@ -31,8 +29,8 @@ if locale == "ptBR" then
 	-- updating
 	L["You can't change your action bars in combat."] = "Não é possível alterar as barras de ação em combate."
 	L["Drop what's on your cursor first."] = "Solte primeiro o que está no cursor."
-	L["Some action bar buttons couldn't be changed. Type /sbr diag."] =
-		"Alguns botões das barras de ação não puderam ser alterados. Digite /sbr diag."
+	L["Some action bar buttons couldn't be changed. Type /refine diag."] =
+		"Alguns botões das barras de ação não puderam ser alterados. Digite /refine diag."
 
 	-- trainer
 	L["open the spellbook (%s)"] = "abra o grimório (%s)"

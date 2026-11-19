@@ -1,8 +1,16 @@
 # Changelog
 
-All notable changes to SpellbookRefresh are listed here.
+All notable changes to Refine (called SpellbookRefresh up to 1.0.0) are listed here.
 
 ## Unreleased
+
+## 1.1.0
+
+- New name: SpellbookRefresh is now **Refine**. Its folder is now `Refine` and its command
+  `/refine`; if you had SpellbookRefresh, remove its old folder. Ignored spells start over.
+- A new button: a small square button at the top right of the spellbook page, on the line of the
+  title. It shows a golden check when your bars are up to date, and an orange refresh symbol, with
+  a count, when spells can be updated; the (i) shows in its corner.
 
 ## 1.0.0
 

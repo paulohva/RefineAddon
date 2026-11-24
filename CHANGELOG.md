@@ -4,6 +4,12 @@ All notable changes to Refine (called SpellbookRefresh up to 1.0.0) are listed h
 
 ## Unreleased
 
+## 1.2.2
+
+- A new, hand-painted icon.
+- The ignored spells window's portrait shows the whole logo, centred, instead of a zoomed-in part of
+  it.
+
 ## 1.2.1
 
 - The ignored spells window shows each spell's icon next to its name, and the spell's tooltip when you

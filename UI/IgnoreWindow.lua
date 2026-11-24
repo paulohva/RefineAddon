@@ -13,7 +13,7 @@ ns.IgnoreWindow = Window
 
 local WIDTH, HEIGHT = 300, 420
 local ROW_HEIGHT = 26
-local ICON = "Interface\\AddOns\\Refine\\Media\\Icon"
+local PORTRAIT = "Interface\\AddOns\\Refine\\Media\\Portrait"   -- the logo drawn smaller: the portrait zooms in
 
 local frame, scrollBox, emptyText
 
@@ -101,7 +101,7 @@ local function Build()
 
 	if frame.SetTitle then frame:SetTitle(ns.NAME)
 	elseif frame.TitleText then frame.TitleText:SetText(ns.NAME) end
-	if frame.SetPortraitToAsset then pcall(frame.SetPortraitToAsset, frame, ICON) end
+	if frame.SetPortraitToAsset then pcall(frame.SetPortraitToAsset, frame, PORTRAIT) end
 
 	local help = frame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	help:SetPoint("TOPLEFT", frame, "TOPLEFT", 64, -32)

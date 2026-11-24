@@ -41,6 +41,7 @@ Open an issue and include:
 | `Trainer.lua` | The chat line after the trainer |
 | `Slash.lua` | `/refine` commands and `/refine diag` |
 | `Media/Icon.tga` | The addon's icon in the game's AddOns list (64×64, 32-bit TGA) |
+| `Media/Portrait.tga` | The ignored spells window's portrait: the logo drawn smaller, as the portrait zooms in (256×256) |
 
 ## Guidelines
 

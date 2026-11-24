@@ -1,12 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<!-- one line of the ignored spells window: a check box and the spell's name -->
-	<Frame name="RefineIgnoreRowTemplate" virtual="true">
+	<!-- one line of the ignored spells window: a check box, the spell's icon and its name -->
+	<Frame name="RefineIgnoreRowTemplate" enableMouse="true" virtual="true">
 		<Size x="260" y="26"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="false">
+				<Texture parentKey="Icon">
+					<Size x="20" y="20"/>
 					<Anchors>
 						<Anchor point="LEFT" x="32" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="false">
+					<Anchors>
+						<Anchor point="LEFT" x="58" y="0"/>
 						<Anchor point="RIGHT" x="-4" y="0"/>
 					</Anchors>
 				</FontString>

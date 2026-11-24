@@ -4,6 +4,11 @@ All notable changes to Refine (called SpellbookRefresh up to 1.0.0) are listed h
 
 ## Unreleased
 
+## 1.2.1
+
+- The ignored spells window shows each spell's icon next to its name, and the spell's tooltip when you
+  point at it, so spells with similar names are easy to tell apart.
+
 ## 1.2.0
 
 - The button only shows when there's something to do: the orange refresh symbol with a count when

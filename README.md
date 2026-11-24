@@ -5,8 +5,6 @@
 When you learn a new rank at the trainer, your action bars keep the old one. Refine adds a small
 refresh button to the spellbook that puts the highest rank you know on your bars, in one click.
 
-*Refine was called SpellbookRefresh up to version 1.0.0.*
-
 ---
 
 ## Features
@@ -37,8 +35,6 @@ spell names and ranks always come from the game. Translations are welcome; see
   2. Extract it into `World of Warcraft\_forever_\Interface\AddOns\`. You should end up with
      `...\AddOns\Refine\Refine.toc`.
   3. Restart the game, or type `/reload` if you're already logged in.
-
-If you had SpellbookRefresh, remove its folder (`...\AddOns\SpellbookRefresh`): Refine replaces it.
 
 ## Usage
 

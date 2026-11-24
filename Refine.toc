@@ -5,7 +5,8 @@
 ## Author: zul_moletom
 ## Version: @project-version@
 ## X-License: MIT
-## X-Website: https://github.com/paulohva/SpellbookRefresh
+## X-Website: https://github.com/paulohva/RefineAddon
+## X-Curse-Project-ID: 1811602
 ## SavedVariables: RefineDB
 ## IconTexture: Interface\AddOns\Refine\Media\Icon
 

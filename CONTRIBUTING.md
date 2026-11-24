@@ -60,11 +60,11 @@ Open an issue and include:
 
 ## Releasing (maintainers)
 
-1. Move the *Unreleased* changelog entries under a new version heading.
-2. Build `Refine-vX.Y.Z.zip` from the release commit: a `Refine/` folder without
-   the files listed under `ignore` in `.pkgmeta`, and with `@project-version@` in the `.toc`
-   replaced by the version.
-3. Create the GitHub release `vX.Y.Z` with that zip, and upload the same zip to CurseForge.
+1. In the release pull request, move the *Unreleased* changelog entries under a new `## X.Y.Z` heading.
+2. Merging it runs `.github/workflows/release.yml`: it builds `Refine-vX.Y.Z.zip`
+   (without the files listed under `ignore` in `.pkgmeta`, and with `@project-version@` in the `.toc`
+   replaced by the version), uploads it to CurseForge and creates the GitHub release `vX.Y.Z`.
+   It needs the repository secret `CF_API_KEY` and the `X-Curse-Project-ID` line in the `.toc`.
 
 By contributing, you agree that your contributions are licensed under the project's
 [MIT License](LICENSE).

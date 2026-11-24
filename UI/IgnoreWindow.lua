@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 -- The ignored spells window: the class spells that aren't on any bar, each
--- with an "ignore" check box. Ticked spells are ignored: they don't count as
+-- with an "ignore" check box, its icon, and its tooltip on hover. Ticked spells are ignored: they don't count as
 -- missing (no (i) on the button). Opened by right-clicking the spellbook button
 -- or with /refine ignored, so it works even while the button is away.
 --------------------------------------------------------------------------------
@@ -42,9 +42,30 @@ function Window.Refresh()
 	emptyText:SetShown(#items == 0)
 end
 
+local function SpellIcon(spellID)
+	if not spellID then return nil end
+	if C_Spell and C_Spell.GetSpellTexture then return ns.Safe.Call(C_Spell.GetSpellTexture, spellID) end
+	return ns.Safe.Call(GetSpellTexture, spellID)
+end
+
+-- the spell's own tooltip, to tell spells with similar names apart
+local function ShowSpellTooltip(row)
+	if not row.spellID then return end
+	GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+	if not pcall(GameTooltip.SetSpellByID, GameTooltip, row.spellID) then
+		GameTooltip:SetText(row.Name:GetText() or "")
+	end
+	GameTooltip:Show()
+end
+
 local function InitRow(row, item)
+	row.spellID = item.spellID
 	row.Name:SetText(item.name)
 	row.Name:SetTextColor(item.ignored and 0.6 or 1, item.ignored and 0.6 or 1, item.ignored and 0.6 or 1)
+	row.Icon:SetTexture(SpellIcon(item.spellID) or "Interface\\Icons\\INV_Misc_QuestionMark")
+	if row.Icon.SetDesaturated then row.Icon:SetDesaturated(item.ignored) end
+	row:SetScript("OnEnter", ShowSpellTooltip)
+	row:SetScript("OnLeave", function() GameTooltip:Hide() end)
 	row.Check:SetChecked(item.ignored)
 	row.Check:SetScript("OnClick", function(self)
 		if self:GetChecked() then

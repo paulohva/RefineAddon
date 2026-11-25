@@ -102,12 +102,24 @@ end
 -- Commands
 --------------------------------------------------------------------------------
 
-local function Help()
-	ns.Print(L["Commands:"])
+-- the everyday commands
+local function EverydayLines()
+	Line("/refine open - " .. L["open the window to choose the spells to ignore"])
 	Line("/refine update - " .. L["update your action bars (the same as the spellbook button)"])
 	Line("/refine ignore <spell> - " .. L["don't list a spell that isn't on your bars"])
 	Line("/refine unignore <spell> - " .. L["list an ignored spell again"])
-	Line("/refine ignored - " .. L["open the window to choose the spells to ignore"])
+end
+
+local function Help()
+	ns.Print(L["Commands:"])
+	EverydayLines()
+	Line("|cff808080/refine advanced - " .. L["all commands"] .. "|r")
+end
+
+-- everything: also the trainer reminder and the commands for bug reports
+local function Advanced()
+	ns.Print(L["All commands:"])
+	EverydayLines()
 	Line("/refine trainer - " .. L["turn the chat line after the trainer on or off"])
 	Line("/refine diag - " .. L["check what this client allows"])
 	Line("/refine debug - " .. L["toggle debug messages"])
@@ -151,7 +163,9 @@ local COMMANDS = {
 	update = Update,
 	ignore = Ignore,
 	unignore = Unignore,
-	ignored = function() ns.IgnoreWindow.Toggle() end,
+	open = function() ns.IgnoreWindow.Show() end,
+	ignored = function() ns.IgnoreWindow.Show() end,   -- (the old name, still works; not listed)
+	advanced = Advanced,
 	trainer = function()
 		ns.db.trainerNote = not ns.db.trainerNote
 		ns.Print(ns.db.trainerNote and L["Chat line after the trainer: on."] or L["Chat line after the trainer: off."])

@@ -4,6 +4,13 @@ All notable changes to Refine (called SpellbookRefresh up to 1.0.0) are listed h
 
 ## Unreleased
 
+## 1.2.4
+
+- A new icon: the addon list's and the ignored spells window's portrait.
+- `/refine open` opens the ignored spells window (`/refine ignored` still works).
+- `/refine` lists only the everyday commands; `/refine advanced` lists them all, with `trainer`,
+  `diag` and `debug`.
+
 ## 1.2.3
 
 - The ignored spells window's portrait is centred in its circle (it sat a little low).

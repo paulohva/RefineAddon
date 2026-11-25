@@ -143,4 +143,11 @@ function Window.Toggle()
 	frame:SetShown(not frame:IsShown())
 end
 
+-- opens it (stays open if it already is): /refine open
+function Window.Show()
+	if not ns.db then return end
+	if not frame then Build() end
+	frame:Show()
+end
+
 ns.Listen("CHANGED", function() ns.Debounce("ignoreWindow", 0.2, Window.Refresh) end)

@@ -16,7 +16,7 @@ refresh button to the spellbook that puts the highest rank you know on your bars
 - **Lower ranks you keep on purpose stay.** If a spell is on your bars more than once, in different
   ranks, only the highest one is updated. A lower rank you keep to save mana stays where it is.
 - **Spells you haven't placed yet.** A small (i) on the button means some of your class spells
-  aren't on any bar; its tooltip lists them. Right-click the button (or type `/refine ignored`) to
+  aren't on any bar; its tooltip lists them. Right-click the button (or type `/refine open`) to
   open a small window where you tick the ones you don't want there.
 - **A reminder after the trainer.** One chat line when spells on your bars got a new rank.
 - **Every bar and page**, including the stance and form bars. Macros and items are never changed.
@@ -43,12 +43,13 @@ Open the spellbook (**P**). The button is at the top right of the page, on the l
 
 | Command | What it does |
 |---|---|
+| `/refine open` | Open the window to choose the spells to ignore |
 | `/refine update` | Update your bars (the same as the button) |
 | `/refine ignore <spell>` | Don't list a spell that isn't on your bars, e.g. `/refine ignore Slow Fall` |
 | `/refine unignore <spell>` | List an ignored spell again |
-| `/refine ignored` | Open the window to choose the spells to ignore |
-| `/refine trainer` | Turn the chat line after the trainer on or off |
-| `/refine diag` | Check what your game client allows (for bug reports) |
+
+Type `/refine advanced` in game for every command (the trainer reminder on or off, `diag` for bug
+reports, `debug`).
 
 ## How it works
 

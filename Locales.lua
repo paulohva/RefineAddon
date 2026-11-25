@@ -42,6 +42,8 @@ if locale == "ptBR" then
 
 	-- slash commands
 	L["Commands:"] = "Comandos:"
+	L["All commands:"] = "Todos os comandos:"
+	L["all commands"] = "todos os comandos"
 	L["update your action bars (the same as the spellbook button)"] =
 		"atualiza as barras de ação (o mesmo que o botão do grimório)"
 	L["don't list a spell that isn't on your bars"] = "deixa de listar uma magia que não está nas barras"
